@@ -11,9 +11,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -25,7 +23,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.utils.URIBuilder;
 
 public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 
