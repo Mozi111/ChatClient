@@ -11,7 +11,29 @@ public class Sporocilo {
 	private Date sentAt;
 	
 	private Sporocilo() { }
-	
+
+	/**
+	 * @param global
+	 * @param text
+	 */
+	public Sporocilo(Boolean global, String text) {
+		super();
+		this.global = global;
+		this.text = text;
+	}
+
+	/**
+	 * @param global
+	 * @param recipient
+	 * @param text
+	 */
+	public Sporocilo(Boolean global, String recipient, String text) {
+		super();
+		this.global = global;
+		this.recipient = recipient;
+		this.text = text;
+	}
+
 	/**
 	 * @param global
 	 * @param recipient

@@ -23,6 +23,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
 
 public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 
@@ -124,10 +125,13 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					Klient.odjavi(link, prejsnjivzdevek);
+					String odziv = Klient.odjavi(link, prejsnjivzdevek);
 					status.setText("Niste prijavljeni.");
 					status.setForeground(Color.red);
 					prejsnjivzdevek = "";
+					System.out.println("Odjavili ste se");
+				} catch (HttpResponseException e1) {
+					System.out.println("Nekaj je narobe pri odjavi!");
 				} catch (URISyntaxException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -138,7 +142,6 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				System.out.println("Odjavili ste se");
 			}
 		});
 		vzdevekpanel.add(odjavi);

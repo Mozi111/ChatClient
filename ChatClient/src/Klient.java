@@ -32,13 +32,16 @@ public class Klient {
 			throws ClientProtocolException, IOException, URISyntaxException {
 		String time = Long.toString(new Date().getTime());
 		URI uri = new URIBuilder(link).addParameter("username", username).addParameter("stop_cache", time).build();
-		String message = "{ \"global\" : " + javno + ", \"text\" : \"" + sporocilo + "\"  }";
+		
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setDateFormat(new ISO8601DateFormat());
+		Sporocilo sporociloJSON = new Sporocilo(javno, sporocilo);
+		String SporociloString = mapper.writeValueAsString(sporociloJSON);
+		System.out.println(SporociloString);
 
-		String responseBody = Request.Post(uri).bodyString(message, ContentType.APPLICATION_JSON).execute()
+		String responseBody = Request.Post(uri).bodyString(SporociloString, ContentType.APPLICATION_JSON).execute()
 				.returnContent().asString();
-
-		System.out.println(responseBody);
-
+		
 		return responseBody;
 	}
 
