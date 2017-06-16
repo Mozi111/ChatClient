@@ -1,13 +1,13 @@
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.ListModel;
-
 public class Sporocila extends TimerTask {
 	private ChatFrame chat;
+	private Timer timer;
 
 	public Sporocila(ChatFrame chat) {
 		this.chat = chat;
@@ -17,8 +17,16 @@ public class Sporocila extends TimerTask {
 	 * Activate the robot!
 	 */
 	public void activate() {
-		Timer timer = new Timer();
+		timer = new Timer();
 		timer.scheduleAtFixedRate(this, 5000, 1000);
+	}
+	
+	/**
+	 * Deactivate the robot!
+	 */
+	public void deactivate() {
+		timer.cancel();
+		System.out.println("Robot deactivated");
 	}
 
 	@Override
@@ -28,18 +36,21 @@ public class Sporocila extends TimerTask {
 			try {
 				prejeta_sporocila = Klient.prejmi_sporocilo(chat.link_sporocila, chat.prejsnjivzdevek);
 				for (Sporocilo sporocilo : prejeta_sporocila) {
-					chat.addMessage(sporocilo.getSender(), sporocilo.getText());
+					chat.addMessage(sporocilo.getSender(), sporocilo.getText(), sporocilo.getSentAt(),
+							sporocilo.getGlobal(), sporocilo.getRecipient());
 				}
 			} catch (IOException | URISyntaxException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		List<Uporabnik> uporabniki;
+		ArrayList<Uporabnik> uporabniki;
 		try {
 			uporabniki = Klient.seznam_uporabnikov(chat.link);
-			Object[] imena_uporabnikov = Klient.imena_uporabnikov(uporabniki).toArray();
-			chat.prijavljeni_uporabniki.setListData(imena_uporabnikov);
+			ArrayList<Uporabnik> myArrayList = uporabniki;
+			Uporabnik[] items = new Uporabnik[myArrayList.size()];
+			myArrayList.toArray(items);
+			chat.prijavljeni_uporabniki.setListData(items);
 		} catch (IOException | URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -8,10 +8,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -33,12 +37,13 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	private JPanel vzdevekpanel;
 	private JLabel vzdeveknapis;
 	private JLabel status;
+	private JButton prejemnik;
 	private JPanel statuspanel;
 	private JScrollPane sp;
 	private JButton prijavi;
 	private JButton odjavi;
-	private JPanel output_uporabniki;
-	public JList prijavljeni_uporabniki;
+	private JPanel prejemnikpanel;
+	public JList<Uporabnik> prijavljeni_uporabniki;
 	private JScrollPane sp2;
 	public String prejsnjivzdevek;
 	public String link;
@@ -46,7 +51,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 
 	public ChatFrame() throws URISyntaxException {
 		super();
-		this.setMinimumSize(new Dimension(700,400));
+		this.setMinimumSize(new Dimension(700, 400));
 		link = "http://chitchat.andrej.com/users";
 		link_sporocila = "http://chitchat.andrej.com/messages";
 		setTitle("Facebook Messenger");
@@ -94,16 +99,27 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if (Klient.imena_uporabnikov(Klient.seznam_uporabnikov(link)).contains(prejsnjivzdevek)) {
-						Klient.odjavi(link, prejsnjivzdevek);
-					}
 					if (vzdevek.getText().equals("")) {
 						vzdevek.setText(System.getProperty("user.name"));
 					}
+					Klient.prijavi(link, vzdevek.getText());
+					if (Klient.imena_uporabnikov(Klient.seznam_uporabnikov(link)).contains(prejsnjivzdevek)) {
+						Klient.odjavi(link, prejsnjivzdevek);
+					}
 					prejsnjivzdevek = vzdevek.getText();
-					Klient.prijavi(link, prejsnjivzdevek);
 					status.setText("Prijavljeni ste z imenom: " + prejsnjivzdevek);
 					status.setForeground(Color.blue);
+				} catch (HttpResponseException e1) {
+					System.out.println("Nekaj je narobe pri prijavi!");
+					if (e1.getLocalizedMessage().equals("Forbidden")) {
+						if (prejsnjivzdevek.equals("")) {
+							status.setText("Uporabnik s tem imenom že obstaja. Niste prijavljeni.");
+						} else {
+							status.setText(
+									"Uporabnik s tem imenom že obstaja. Prijavljeni ste z imenom: " + prejsnjivzdevek);
+						}
+						status.setForeground(Color.blue);
+					}
 				} catch (URISyntaxException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -129,9 +145,9 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 					status.setText("Niste prijavljeni.");
 					status.setForeground(Color.red);
 					prejsnjivzdevek = "";
-					System.out.println("Odjavili ste se");
 				} catch (HttpResponseException e1) {
-					System.out.println("Nekaj je narobe pri odjavi!");
+					//System.out.println("Nekaj je narobe pri odjavi!");
+					e1.printStackTrace();
 				} catch (URISyntaxException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -145,10 +161,12 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			}
 		});
 		vzdevekpanel.add(odjavi);
-		
+
 		this.output = new JTextArea(20, 30);
 		this.sp = new JScrollPane(output);
 		this.output.setEditable(false);
+		this.output.setLineWrap(true);
+		this.output.setWrapStyleWord(true);
 		GridBagConstraints outputConstraint = new GridBagConstraints();
 		outputConstraint.gridx = 0;
 		outputConstraint.gridy = 2;
@@ -156,8 +174,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		outputConstraint.weightx = 1;
 		outputConstraint.fill = GridBagConstraints.BOTH;
 		pane.add(sp, outputConstraint);
-		
-		this.prijavljeni_uporabniki = new JList();
+
+		this.prijavljeni_uporabniki = new JList<Uporabnik>();
 		this.sp2 = new JScrollPane(prijavljeni_uporabniki);
 		GridBagConstraints prijavljeni_uporabnikiConstraint = new GridBagConstraints();
 		prijavljeni_uporabnikiConstraint.gridx = 1;
@@ -167,14 +185,44 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		prijavljeni_uporabnikiConstraint.fill = GridBagConstraints.BOTH;
 		pane.add(sp2, prijavljeni_uporabnikiConstraint);
 
+		prijavljeni_uporabniki.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent evt) {
+				JList<Uporabnik> list = (JList<Uporabnik>) evt.getSource();
+				System.out.println("Clicked on the list");
+				System.out.println(list.getSelectedValue());
+				if (list.getSelectedValue() != null) {
+					prejemnik.setText("Prejemnik: " + ((Uporabnik) list.getSelectedValue()).getUsername());
+				}
+			}
+		});
+
 		this.input = new JTextField(40);
 		GridBagConstraints inputConstraint = new GridBagConstraints();
 		inputConstraint.gridx = 0;
 		inputConstraint.gridy = 3;
-		inputConstraint.gridwidth = 2;
+		inputConstraint.weightx = 1;
 		inputConstraint.fill = GridBagConstraints.HORIZONTAL;
 		pane.add(input, inputConstraint);
 		input.addKeyListener(this);
+
+		this.prejemnikpanel = new JPanel();
+		FlowLayout prejemnikpanelLayout = new FlowLayout();
+		prejemnikpanel.setLayout(prejemnikpanelLayout);
+		GridBagConstraints prejemnikpanelConstraint = new GridBagConstraints();
+		prejemnikpanelConstraint.gridx = 1;
+		prejemnikpanelConstraint.gridy = 3;
+		prejemnikpanelConstraint.weightx = 0.3;
+		prejemnikpanelConstraint.fill = GridBagConstraints.HORIZONTAL;
+		pane.add(prejemnikpanel, prejemnikpanelConstraint);
+
+		this.prejemnik = new JButton("Prejemnik: Vsi");
+		prejemnikpanel.add(prejemnik);
+		prejemnik.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				prejemnik.setText("Prejemnik: Vsi");
+			}
+		});
 
 		addWindowListener(new WindowAdapter() {
 			public void windowOpened(WindowEvent e) {
@@ -192,9 +240,15 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				ChitChat.robot2.deactivate();
 				System.out.println("Izhod");
 			}
 		});
+		this.addMessage("Help",
+				"Pozdravljeni! Prosim vpišite zaželjeno uporabniško ime in se prijavite. Èe želite poslati zasebno sporoèilo uporabniku, kliknite nanj"
+						+ " v seznamu na desni. Èe želite sporoèilo nameniti vsem, kliknite na gumb pod seznamom uporabnikov. Sporoèilo vpišite v spodnje polje in pritisnite enter."
+						+ " Veliko zabave!",
+				new Date(), true, "");
 	}
 
 	/**
@@ -203,10 +257,20 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	 * @param message
 	 *            - the message content
 	 */
-	public void addMessage(String person, String message) {
+	public void addMessage(String person, String message, Date poslano_ob, Boolean javno, String prejemnik) {
 		String chat = this.output.getText();
-
-		this.output.setText(chat + person + ": " + message + "\n");
+		Calendar koledar = Calendar.getInstance();
+		koledar.setTime(poslano_ob);
+		int ure = koledar.get(Calendar.HOUR_OF_DAY);
+		int minute = koledar.get(Calendar.MINUTE);
+		String cas = ure + ":" + minute;
+		String javno_string;
+		if (javno) {
+			javno_string = "javno";
+		} else {
+			javno_string = "za: " + prejemnik;
+		}
+		this.output.setText(chat + "[" + cas + "] " + person + ": " + message + " (" + javno_string + ")\n");
 	}
 
 	public JTextArea getOutput() {
@@ -221,10 +285,19 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	public void keyTyped(KeyEvent e) {
 		if (e.getSource() == this.input) {
 			if (e.getKeyChar() == '\n') {
-				if (!prejsnjivzdevek.equals("")) {
-					this.addMessage(this.vzdevek.getText(), this.input.getText());
+				if (!prejsnjivzdevek.equals("") && !this.input.getText().equals("")) {
 					try {
-						Klient.poslji_sporocilo(link_sporocila, prejsnjivzdevek, this.input.getText(), true);
+						String oseba_prejemnik = prejemnik.getText().substring("Prejemnik: ".length(),
+								prejemnik.getText().length());
+						Boolean javno;
+						if (prejemnik.getText().equals("Prejemnik: Vsi")) {
+							javno = true;
+						} else {
+							javno = false;
+						}
+						Klient.poslji_sporocilo(link_sporocila, prejsnjivzdevek, this.input.getText(), javno,
+								oseba_prejemnik);
+						this.addMessage(prejsnjivzdevek, this.input.getText(), new Date(), javno, oseba_prejemnik);
 					} catch (IOException | URISyntaxException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();

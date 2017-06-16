@@ -1,13 +1,16 @@
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class PrimeRobot extends TimerTask {
 	private ChatFrame chat;
 	private int k;
-	
+
 	private static boolean isPrime(int n) {
 		for (int i = 2; i * i <= n; i++) {
-			if (n % i == 0) { return false; }
+			if (n % i == 0) {
+				return false;
+			}
 		}
 		return true;
 	}
@@ -24,11 +27,11 @@ public class PrimeRobot extends TimerTask {
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(this, 5000, 1000);
 	}
-	
+
 	@Override
 	public void run() {
 		if (isPrime(this.k)) {
-			chat.addMessage("primer", Integer.toString(this.k) + " is prime");
+			chat.addMessage("primer", Integer.toString(this.k) + " is prime", new Date(), true, "");
 		}
 		this.k++;
 	}

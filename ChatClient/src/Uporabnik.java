@@ -1,14 +1,14 @@
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Uporabnik {
 	private String username;
 	private Date lastActive;
-	
-	private Uporabnik() { }
-	
+
+	private Uporabnik() {}
+
 	public Uporabnik(String username, Date lastActive) {
 		this.username = username;
 		this.lastActive = lastActive;
@@ -16,7 +16,17 @@ public class Uporabnik {
 
 	@Override
 	public String toString() {
-		return "Uporabnik [username=" + username + ", lastActive=" + lastActive + "]";
+		long trenuten_cas = new Date().getTime();
+		long zadnje_aktiven = lastActive.getTime();
+		long razlika = trenuten_cas - zadnje_aktiven;
+		long minute = TimeUnit.MILLISECONDS.toMinutes(razlika);
+		String aktiven;
+		if (minute < 5) {
+			aktiven = "Aktiven";
+		} else {
+			aktiven = "Neaktiven";
+		}
+		return username + " - " + aktiven;
 	}
 
 	@JsonProperty("username")
@@ -36,6 +46,5 @@ public class Uporabnik {
 	public void setLastActive(Date lastActive) {
 		this.lastActive = lastActive;
 	}
-	
-	
+
 }

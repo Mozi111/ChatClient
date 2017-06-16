@@ -16,7 +16,8 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 public class Klient {
 
-	public static List<Sporocilo> prejmi_sporocilo(String link, String username) throws ClientProtocolException, IOException, URISyntaxException {
+	public static List<Sporocilo> prejmi_sporocilo(String link, String username)
+			throws ClientProtocolException, IOException, URISyntaxException {
 		String time = Long.toString(new Date().getTime());
 		URI uri = new URIBuilder(link).addParameter("username", username).addParameter("stop_cache", time).build();
 		String responseBody = Request.Get(uri).execute().returnContent().asString();
@@ -28,20 +29,21 @@ public class Klient {
 		return sporocila;
 	}
 
-	public static String poslji_sporocilo(String link, String username, String sporocilo, Boolean javno)
-			throws ClientProtocolException, IOException, URISyntaxException {
+	public static String poslji_sporocilo(String link, String username, String sporocilo, Boolean javno,
+			String prejemnik) throws ClientProtocolException, IOException, URISyntaxException {
 		String time = Long.toString(new Date().getTime());
 		URI uri = new URIBuilder(link).addParameter("username", username).addParameter("stop_cache", time).build();
-		
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setDateFormat(new ISO8601DateFormat());
-		Sporocilo sporociloJSON = new Sporocilo(javno, sporocilo);
+		Sporocilo sporociloJSON;
+		if (javno == true) {
+			sporociloJSON = new Sporocilo(javno, sporocilo);
+		} else {
+			sporociloJSON = new Sporocilo(javno, prejemnik, sporocilo);
+		}
 		String SporociloString = mapper.writeValueAsString(sporociloJSON);
-		System.out.println(SporociloString);
-
 		String responseBody = Request.Post(uri).bodyString(SporociloString, ContentType.APPLICATION_JSON).execute()
 				.returnContent().asString();
-		
 		return responseBody;
 	}
 
@@ -58,7 +60,7 @@ public class Klient {
 		return seznam_imen;
 	}
 
-	public static List<Uporabnik> seznam_uporabnikov(String link)
+	public static ArrayList<Uporabnik> seznam_uporabnikov(String link)
 			throws ClientProtocolException, IOException, URISyntaxException {
 		String responseBody = Request.Get(link).execute().returnContent().asString();
 
@@ -67,7 +69,7 @@ public class Klient {
 
 		TypeReference<List<Uporabnik>> t = new TypeReference<List<Uporabnik>>() {
 		};
-		List<Uporabnik> uporabniki = mapper.readValue(responseBody, t);
+		ArrayList<Uporabnik> uporabniki = mapper.readValue(responseBody, t);
 		return uporabniki;
 	}
 

@@ -1,6 +1,5 @@
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Sporocilo {
@@ -9,8 +8,8 @@ public class Sporocilo {
 	private String sender;
 	private String text;
 	private Date sentAt;
-	
-	private Sporocilo() { }
+
+	private Sporocilo() {}
 
 	/**
 	 * @param global
@@ -52,10 +51,10 @@ public class Sporocilo {
 
 	@Override
 	public String toString() {
-		return "Sporocilo [global=" + global + ", recipient=" + recipient + ", sender=" + sender + ", text=" + text + ", sent_at=" + sentAt + "]";
+		return "Sporocilo [global=" + global + ", recipient=" + recipient + ", sender=" + sender + ", text=" + text
+				+ ", sent_at=" + sentAt + "]";
 	}
 
-	
 	@JsonProperty("global")
 	public Boolean getGlobal() {
 		return global;
@@ -64,7 +63,7 @@ public class Sporocilo {
 	public void setGlobal(Boolean global) {
 		this.global = global;
 	}
-	
+
 	@JsonProperty("recipient")
 	public String getRecipient() {
 		return recipient;
@@ -73,7 +72,7 @@ public class Sporocilo {
 	public void setRecipient(String recipient) {
 		this.recipient = recipient;
 	}
-	
+
 	@JsonProperty("sender")
 	public String getSender() {
 		return sender;
@@ -82,7 +81,7 @@ public class Sporocilo {
 	public void setSender(String sender) {
 		this.sender = sender;
 	}
-	
+
 	@JsonProperty("text")
 	public String getText() {
 		return text;
@@ -91,7 +90,7 @@ public class Sporocilo {
 	public void setText(String text) {
 		this.text = text;
 	}
-	
+
 	@JsonProperty("sent_at")
 	public Date getSentAt() {
 		return sentAt;
@@ -100,6 +99,5 @@ public class Sporocilo {
 	public void setSentAt(Date sentAt) {
 		this.sentAt = sentAt;
 	}
-	
-	
+
 }
