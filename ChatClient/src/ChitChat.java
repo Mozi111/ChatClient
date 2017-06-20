@@ -11,7 +11,7 @@ public class ChitChat {
 		glavna_fukncija = new Osvezi(chatFrame);
 		glavna_fukncija.activate(); // Zažene funkcijo za pridobivanje sporoèil in prijavljenih uporabnikov.
 		chatFrame.pack();
-		chatFrame.setSize(700,400);
+		chatFrame.setSize(700,400); // Doloèi zaèetno velikost.
 		chatFrame.setVisible(true); // Prikaže okno.
 	}
 
