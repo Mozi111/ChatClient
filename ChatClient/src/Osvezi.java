@@ -7,16 +7,16 @@ import java.util.TimerTask;
 
 import javax.swing.text.BadLocationException;
 
-public class Sporocila extends TimerTask {
+public class Osvezi extends TimerTask {
 	private ChatFrame chat;
 	private Timer timer;
 
-	public Sporocila(ChatFrame chat) {
+	public Osvezi(ChatFrame chat) {
 		this.chat = chat;
 	}
 
 	/**
-	 * Activate the robot!
+	 * Požene glavno funkcijo vsak interval.
 	 */
 	public void activate() {
 		timer = new Timer();
@@ -24,22 +24,21 @@ public class Sporocila extends TimerTask {
 	}
 	
 	/**
-	 * Deactivate the robot!
+	 * Prekine z dejavnostjo.
 	 */
 	public void deactivate() {
 		timer.cancel();
-		System.out.println("Robot deactivated");
 	}
 
 	@Override
 	public void run() {
-		if (!chat.prejsnjivzdevek.equals("")) {
+		if (!chat.ime.equals("")) { // Èe smo prijavljeni preveri, èe nas èakajo nova sporoèila.
 			List<Sporocilo> prejeta_sporocila;
 			try {
-				prejeta_sporocila = Klient.prejmi_sporocilo(chat.link_sporocila, chat.prejsnjivzdevek);
+				prejeta_sporocila = Klient.prejmi_sporocilo(chat.link_sporocila, chat.ime);
 				for (Sporocilo sporocilo : prejeta_sporocila) {
 					chat.addMessage(sporocilo.getSender(), sporocilo.getText(), sporocilo.getSentAt(),
-							sporocilo.getGlobal(), sporocilo.getRecipient());
+							sporocilo.getGlobal(), sporocilo.getRecipient()); // Objavi nova sporoèila.
 				}
 			} catch (IOException | URISyntaxException e) {
 				// TODO Auto-generated catch block
@@ -49,13 +48,13 @@ public class Sporocila extends TimerTask {
 				e.printStackTrace();
 			}
 		}
-		ArrayList<Uporabnik> uporabniki;
+		ArrayList<Uporabnik> uporabniki; // Prejme seznam prijavljenih uporabnikov.
 		try {
-			uporabniki = Klient.seznam_uporabnikov(chat.link);
+			uporabniki = Klient.prijavljeni_uporabniki(chat.link_uporabniki);
 			ArrayList<Uporabnik> myArrayList = uporabniki;
 			Uporabnik[] items = new Uporabnik[myArrayList.size()];
 			myArrayList.toArray(items);
-			chat.prijavljeni_uporabniki.setListData(items);
+			chat.seznam_uporabnikov.setListData(items); // Prikaže prijavljenje uporabnike preko JList.
 		} catch (IOException | URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

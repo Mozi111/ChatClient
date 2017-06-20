@@ -16,6 +16,9 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 public class Klient {
 
+	/**
+	 * Vrne seznam sporoèil za uporabnika.
+	 */
 	public static List<Sporocilo> prejmi_sporocilo(String link, String username)
 			throws ClientProtocolException, IOException, URISyntaxException {
 		String time = Long.toString(new Date().getTime());
@@ -29,6 +32,9 @@ public class Klient {
 		return sporocila;
 	}
 
+	/**
+	 * Pošlje sporoèilo prejemniku.
+	 */
 	public static String poslji_sporocilo(String link, String username, String sporocilo, Boolean javno,
 			String prejemnik) throws ClientProtocolException, IOException, URISyntaxException {
 		String time = Long.toString(new Date().getTime());
@@ -47,20 +53,23 @@ public class Klient {
 		return responseBody;
 	}
 
+	/**
+	 * Vrne seznam imen uporabnikov iz seznama uporabnikov (objektov).
+	 */
 	public static List<String> imena_uporabnikov(List<Uporabnik> seznam) {
 		List<String> seznam_imen = new ArrayList<String>();
-
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setDateFormat(new ISO8601DateFormat());
-
 		for (Uporabnik uporabnik : seznam) {
 			seznam_imen.add(uporabnik.getUsername());
 		}
-
 		return seznam_imen;
 	}
 
-	public static ArrayList<Uporabnik> seznam_uporabnikov(String link)
+	/**
+	 * Vrne seznam prijavljenih uporabnikov.
+	 */
+	public static ArrayList<Uporabnik> prijavljeni_uporabniki(String link)
 			throws ClientProtocolException, IOException, URISyntaxException {
 		String responseBody = Request.Get(link).execute().returnContent().asString();
 
@@ -73,6 +82,9 @@ public class Klient {
 		return uporabniki;
 	}
 
+	/**
+	 * Odjavi uporabnika.
+	 */
 	public static String odjavi(String link, String username)
 			throws ClientProtocolException, IOException, URISyntaxException {
 		String time = Long.toString(new Date().getTime());
@@ -81,6 +93,9 @@ public class Klient {
 		return responseBody;
 	}
 
+	/**
+	 * Prijavi uporabnika.
+	 */
 	public static String prijavi(String link, String username)
 			throws URISyntaxException, ClientProtocolException, IOException {
 		String time = Long.toString(new Date().getTime());

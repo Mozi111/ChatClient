@@ -22,9 +22,9 @@ public class Uporabnik {
 		long minute = TimeUnit.MILLISECONDS.toMinutes(razlika);
 		String aktiven;
 		if (minute < 5) {
-			aktiven = "Aktiven";
+			aktiven = "Aktiven"; // Èe je bil uporabnik aktiven v roku zadnjih 5 min.
 		} else {
-			aktiven = "Neaktiven";
+			aktiven = "Neaktiven"; // Èe ni bil.
 		}
 		return username + " - " + aktiven;
 	}
