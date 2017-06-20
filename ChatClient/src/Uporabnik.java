@@ -46,5 +46,4 @@ public class Uporabnik {
 	public void setLastActive(Date lastActive) {
 		this.lastActive = lastActive;
 	}
-
 }

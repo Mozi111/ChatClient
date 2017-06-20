@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,15 +25,24 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 
 public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 
-	private JTextArea output;
+	private JTextPane output;
+	private StyledDocument glavno_okno;
+	private StyledDocument trenutno_okno;
+	private Map<String, StyledDocument> okna = new HashMap<String,StyledDocument>();;
 	private JTextField input;
 	private JTextField vzdevek;
 	private JPanel vzdevekpanel;
@@ -49,7 +60,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	public String link;
 	public String link_sporocila;
 
-	public ChatFrame() throws URISyntaxException {
+	public ChatFrame() throws URISyntaxException, BadLocationException {
 		super();
 		this.setMinimumSize(new Dimension(700, 400));
 		link = "http://chitchat.andrej.com/users";
@@ -161,26 +172,26 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			}
 		});
 		vzdevekpanel.add(odjavi);
-
-		this.output = new JTextArea(20, 30);
+	    
+		this.output = new JTextPane();
 		this.sp = new JScrollPane(output);
 		this.output.setEditable(false);
-		this.output.setLineWrap(true);
-		this.output.setWrapStyleWord(true);
 		GridBagConstraints outputConstraint = new GridBagConstraints();
 		outputConstraint.gridx = 0;
 		outputConstraint.gridy = 2;
 		outputConstraint.weighty = 1;
-		outputConstraint.weightx = 1;
+		outputConstraint.weightx = 0.7;
 		outputConstraint.fill = GridBagConstraints.BOTH;
 		pane.add(sp, outputConstraint);
+		glavno_okno = output.getStyledDocument();
+		trenutno_okno = glavno_okno;
 
 		this.prijavljeni_uporabniki = new JList<Uporabnik>();
 		this.sp2 = new JScrollPane(prijavljeni_uporabniki);
 		GridBagConstraints prijavljeni_uporabnikiConstraint = new GridBagConstraints();
 		prijavljeni_uporabnikiConstraint.gridx = 1;
 		prijavljeni_uporabnikiConstraint.gridy = 2;
-		prijavljeni_uporabnikiConstraint.weighty = 0.3;
+		prijavljeni_uporabnikiConstraint.weighty = 1;
 		prijavljeni_uporabnikiConstraint.weightx = 0.3;
 		prijavljeni_uporabnikiConstraint.fill = GridBagConstraints.BOTH;
 		pane.add(sp2, prijavljeni_uporabnikiConstraint);
@@ -192,6 +203,14 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 				System.out.println(list.getSelectedValue());
 				if (list.getSelectedValue() != null) {
 					prejemnik.setText("Prejemnik: " + ((Uporabnik) list.getSelectedValue()).getUsername());
+					trenutno_okno = okna.get(list.getSelectedValue().getUsername());
+					if(trenutno_okno == null){
+						StyledDocument zasebno_okno = new DefaultStyledDocument();
+						okna.put(list.getSelectedValue().getUsername(), zasebno_okno);
+						trenutno_okno = zasebno_okno;
+					}
+					output.setStyledDocument(trenutno_okno);
+					System.out.println(trenutno_okno);
 				}
 			}
 		});
@@ -221,6 +240,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				prejemnik.setText("Prejemnik: Vsi");
+				trenutno_okno = glavno_okno;
+				output.setStyledDocument(trenutno_okno);
 			}
 		});
 
@@ -256,24 +277,63 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	 *            - the person sending the message
 	 * @param message
 	 *            - the message content
+	 * @throws BadLocationException 
 	 */
-	public void addMessage(String person, String message, Date poslano_ob, Boolean javno, String prejemnik) {
-		String chat = this.output.getText();
+	public void addMessage(String person, String message, Date poslano_ob, Boolean javno, String prejemnik) throws BadLocationException {
 		Calendar koledar = Calendar.getInstance();
 		koledar.setTime(poslano_ob);
 		int ure = koledar.get(Calendar.HOUR_OF_DAY);
 		int minute = koledar.get(Calendar.MINUTE);
-		String cas = ure + ":" + minute;
-		String javno_string;
-		if (javno) {
-			javno_string = "javno";
+		String cas = String.format("%d:%02d", ure, minute);
+		StyleContext context = new StyleContext();
+		Style obicajen_stil = context.getStyle(StyleContext.DEFAULT_STYLE);
+	    StyleConstants.setAlignment(obicajen_stil, StyleConstants.ALIGN_RIGHT);
+	    StyleConstants.setFontSize(obicajen_stil, 12);
+	    StyleConstants.setSpaceAbove(obicajen_stil, 4);
+	    StyleConstants.setSpaceBelow(obicajen_stil, 4);
+		StyledDocument doc;
+	    if (javno) {
+	    	doc = glavno_okno;
 		} else {
-			javno_string = "za: " + prejemnik;
+			doc = trenutno_okno;
+			if (!person.equals(prejsnjivzdevek)){
+			    StyleConstants.setForeground(obicajen_stil, Color.red);
+				StyledDocument alert = glavno_okno;
+				alert.insertString(alert.getLength(), "Dobili ste sporoèilo od " + person +"!\n", obicajen_stil);
+			    StyleConstants.setForeground(obicajen_stil, Color.black);
+				doc = okna.get(person);
+			}
+			if(doc == null){
+				StyledDocument zasebno_okno = new DefaultStyledDocument();
+				okna.put(person, zasebno_okno);
+				doc = zasebno_okno;
+			}
 		}
-		this.output.setText(chat + "[" + cas + "] " + person + ": " + message + " (" + javno_string + ")\n");
+	    String prvi_del = "[" + cas + "] ";
+		doc.insertString(doc.getLength(), prvi_del, obicajen_stil);
+	    StyleConstants.setForeground(obicajen_stil, Color.blue);
+		doc.insertString(doc.getLength(), person, obicajen_stil);
+		String ukaz = message.substring(message.length()-2);
+		Color barva = Color.black;
+		if (ukaz.equals("/r")){
+			barva = Color.red;
+			message = message.substring(0, message.length()-2);
+		} else if (ukaz.equals("/b")){
+			barva = Color.blue;
+			message = message.substring(0, message.length()-2);
+		} else if (ukaz.equals("/g")){
+			barva = Color.green;
+			message = message.substring(0, message.length()-2);
+		} else if (ukaz.equals("/y")){
+			barva = Color.yellow;
+			message = message.substring(0, message.length()-2);
+		}
+	    StyleConstants.setForeground(obicajen_stil, barva);
+		String drugi_del = ": " + message + "\n";
+		doc.insertString(doc.getLength(), drugi_del, obicajen_stil);
 	}
 
-	public JTextArea getOutput() {
+	public JTextPane getOutput() {
 		return output;
 	}
 
@@ -299,6 +359,9 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 								oseba_prejemnik);
 						this.addMessage(prejsnjivzdevek, this.input.getText(), new Date(), javno, oseba_prejemnik);
 					} catch (IOException | URISyntaxException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (BadLocationException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}

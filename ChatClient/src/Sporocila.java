@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.text.BadLocationException;
+
 public class Sporocila extends TimerTask {
 	private ChatFrame chat;
 	private Timer timer;
@@ -40,6 +42,9 @@ public class Sporocila extends TimerTask {
 							sporocilo.getGlobal(), sporocilo.getRecipient());
 				}
 			} catch (IOException | URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (BadLocationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
