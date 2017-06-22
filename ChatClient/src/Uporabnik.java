@@ -7,7 +7,8 @@ public class Uporabnik {
 	private String username;
 	private Date lastActive;
 
-	private Uporabnik() {}
+	private Uporabnik() {
+	}
 
 	public Uporabnik(String username, Date lastActive) {
 		this.username = username;
@@ -22,9 +23,10 @@ public class Uporabnik {
 		long minute = TimeUnit.MILLISECONDS.toMinutes(razlika);
 		String aktiven;
 		if (minute < 5) {
-			aktiven = "Aktiven"; // Èe je bil uporabnik aktiven v roku zadnjih 5 min.
+			aktiven = "Aktiven"; // ÄŒe je bil uporabnik aktiven v roku zadnjih 5
+									// min.
 		} else {
-			aktiven = "Neaktiven"; // Èe ni bil.
+			aktiven = "Neaktiven"; // ÄŒe ni bil.
 		}
 		return username + " - " + aktiven;
 	}

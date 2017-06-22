@@ -9,7 +9,8 @@ public class Sporocilo {
 	private String text;
 	private Date sentAt;
 
-	private Sporocilo() {}
+	private Sporocilo() {
+	}
 
 	/**
 	 * @param global

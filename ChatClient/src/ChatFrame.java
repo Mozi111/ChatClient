@@ -39,30 +39,32 @@ import org.apache.http.client.HttpResponseException;
 
 public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 
-	private JTextPane message_output; // Okno s sporoËili
-	private JScrollPane output_drsnik; // Drsnik za okno s sporoËili
-	private StyledDocument glavno_okno; // Okno za javna sporoËila
+	private JTextPane message_output; // Okno s sporoƒçili
+	private JScrollPane output_drsnik; // Drsnik za okno s sporoƒçili
+	private StyledDocument glavno_okno; // Okno za javna sporoƒçila
 	private StyledDocument trenutno_okno; // Okno, ki je trenutno prikazano
-	private Map<String, StyledDocument> okna = new HashMap<String,StyledDocument>(); // Slovar, ki hrani zasebna sporoËila za vsakega uporabnika
-	private JTextField message_input; // Polje za vnos sporoËila
-	private JTextField vzdevek_input; // Polje za vnos uporabniökega imena
+	private Map<String, StyledDocument> okna = new HashMap<String, StyledDocument>(); // Slovar, ki hrani zasebna sporoƒçila za vsakega uporabnika
+	private JTextField message_input; // Polje za vnos sporoƒçila
+	private JTextField vzdevek_input; // Polje za vnos uporabni≈°kega imena
 	private JPanel vzdevek_panel;
 	private JLabel vzdevek_napis; // Napis pred poljem za vnos.
-	private JLabel status; // Napis, ki nam prikazuje trenuten status (prijavljeni ali ne)
+	private JLabel status; // Napis, ki nam prikazuje trenuten status
+							// (prijavljeni ali ne)
 	private JPanel status_panel;
-	private JButton prejemnik; // Gumb, ki izpisuje trenutnega prejemnika in ga lahko uporabimo, da preidemo nazaj na javna sporoËila
+	private JButton prejemnik; // Gumb, ki izpisuje trenutnega prejemnika in ga
+								// lahko uporabimo, da preidemo nazaj na javna sporoƒçila
 	private JPanel prejemnik_panel;
 	private JButton prijavi; // Gumb za prijavo
 	private JButton odjavi; // Gumb za odjavo
 	public JList<Uporabnik> seznam_uporabnikov; // Seznam prijavljenih uporabnikov
 	private JScrollPane uporabniki_drsnik; // Drsnik za seznam prijavljenih uporabnikov
-	public String ime; // Naöe ime (pod katerim smo prijavljeni)
+	public String ime; // Na≈°e ime (pod katerim smo prijavljeni)
 	public String link_uporabniki; // Povezava (na kateri so uporabniki)
-	public String link_sporocila; // Povezava (na kateri so sporoËila)
+	public String link_sporocila; // Povezava (na kateri so sporoƒçila)
 
 	public ChatFrame() throws URISyntaxException, BadLocationException {
 		super();
-		this.setMinimumSize(new Dimension(700, 400)); // Najmanjöa velikost okna
+		this.setMinimumSize(new Dimension(700, 400)); // Najmanj≈°a velikost okna
 		link_uporabniki = "http://chitchat.andrej.com/users";
 		link_sporocila = "http://chitchat.andrej.com/messages";
 		setTitle("Facebook Messenger"); // Naslov okna
@@ -93,13 +95,14 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		status_panel_constraints.fill = GridBagConstraints.HORIZONTAL;
 		pane.add(status_panel, status_panel_constraints);
 
-		status = new JLabel(); // Napis, ki nam prikazuje trenuten status (prijavljeni ali ne)
+		status = new JLabel(); // Napis, ki nam prikazuje trenuten status
+								// (prijavljeni ali ne)
 		status.setText("Niste prijavljeni.");
 		status.setForeground(Color.red);
 		ime = "";
 		status_panel.add(status);
 
-		vzdevek_input = new JTextField(40); // Polje za vnos uporabniökega imena
+		vzdevek_input = new JTextField(40); // Polje za vnos uporabni≈°kega imena
 		vzdevek_input.setText(System.getProperty("user.name"));
 		vzdevek_panel.add(vzdevek_input);
 		vzdevek_input.addKeyListener(this);
@@ -115,18 +118,17 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 					}
 					Klient.prijavi(link_uporabniki, vzdevek_input.getText()); // Poskusimo prijaviti novo ime
 					if (Klient.imena_uporabnikov(Klient.prijavljeni_uporabniki(link_uporabniki)).contains(ime)) {
-						Klient.odjavi(link_uporabniki, ime); // Odjavimo prejönje ime, Ëe smo bili prijavljeni
+						Klient.odjavi(link_uporabniki, ime); // Odjavimo prej≈°nje ime, ƒçe smo bili prijavljeni
 					}
 					ime = vzdevek_input.getText();
-					status.setText("Prijavljeni ste z imenom: " + ime); // Izpiöemo v status.
+					status.setText("Prijavljeni ste z imenom: " + ime); // Izpi≈°emo v status.
 					status.setForeground(Color.blue);
 				} catch (HttpResponseException e1) {
-					if (e1.getLocalizedMessage().equals("Forbidden")) { // Uporabnik s tem imenom ûe obstaja
+					if (e1.getLocalizedMessage().equals("Forbidden")) { // Uporabnik s tem imenom ≈æe obstaja
 						if (ime.equals("")) {
-							status.setText("Uporabnik s tem imenom ûe obstaja. Niste prijavljeni.");
+							status.setText("Uporabnik s tem imenom ≈æe obstaja. Niste prijavljeni.");
 						} else {
-							status.setText(
-									"Uporabnik s tem imenom ûe obstaja. Prijavljeni ste z imenom: " + ime);
+							status.setText("Uporabnik s tem imenom ≈æe obstaja. Prijavljeni ste z imenom: " + ime);
 						}
 						status.setForeground(Color.blue);
 					}
@@ -150,7 +152,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if (!ime.equals("")){ // Preverimo, Ëe sploh smo prijavljeni
+					if (!ime.equals("")) { // Preverimo, ƒçe sploh smo
+											// prijavljeni
 						String odziv = Klient.odjavi(link_uporabniki, ime);
 						status.setText("Niste prijavljeni.");
 						status.setForeground(Color.red);
@@ -171,9 +174,10 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			}
 		});
 		vzdevek_panel.add(odjavi);
-	    
-		message_output = new JTextPane(); // Okno s sporoËili
-		output_drsnik = new JScrollPane(message_output); // Drsnik za okno s sporoËili
+
+		message_output = new JTextPane(); // Okno s sporoƒçili
+		message_output.setPreferredSize(new Dimension(600, 400)); // Da se nam ne odpre preveliko okno.
+		output_drsnik = new JScrollPane(message_output); // Drsnik za okno s sporoƒçili
 		message_output.setEditable(false);
 		GridBagConstraints output_constraints = new GridBagConstraints();
 		output_constraints.gridx = 0;
@@ -198,20 +202,23 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		seznam_uporabnikov.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
 				JList<Uporabnik> list = (JList<Uporabnik>) evt.getSource();
-				if (list.getSelectedValue() != null) { //Preverimo, da nismo kliknili v prazno
+				if (list.getSelectedValue() != null) { // Preverimo, da nismo
+														// kliknili v prazno
 					prejemnik.setText("Prejemnik: " + ((Uporabnik) list.getSelectedValue()).getUsername());
 					trenutno_okno = okna.get(list.getSelectedValue().getUsername());
-					if(trenutno_okno == null){ // »e okno za tega uporabnika öe ne obstaja, ga naredimo
+					if (trenutno_okno == null) { // ƒåe okno za tega uporabnika
+													// ≈°e ne obstaja, ga naredimo
 						StyledDocument zasebno_okno = new DefaultStyledDocument();
 						okna.put(list.getSelectedValue().getUsername(), zasebno_okno);
 						trenutno_okno = zasebno_okno;
 					}
-					message_output.setStyledDocument(trenutno_okno); // Odpremo okno za zasebna sporoËila z izbranim uuporabnikom.
+					message_output.setStyledDocument(trenutno_okno); // Odpremo okno za zasebna
+																		// sporoƒçila z izbranim uporabnikom.
 				}
 			}
 		});
 
-		message_input = new JTextField(40); // Polje za vnos sporoËila
+		message_input = new JTextField(40); // Polje za vnos sporoƒçila
 		GridBagConstraints input_constraints = new GridBagConstraints();
 		input_constraints.gridx = 0;
 		input_constraints.gridy = 3;
@@ -230,7 +237,11 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		prejemnik_panel_constraints.fill = GridBagConstraints.HORIZONTAL;
 		pane.add(prejemnik_panel, prejemnik_panel_constraints);
 
-		prejemnik = new JButton("Prejemnik: Vsi"); // Gumb, ki izpisuje trenutnega prejemnika in ga lahko uporabimo, da preidemo nazaj na javna sporoËila
+		prejemnik = new JButton("Prejemnik: Vsi"); // Gumb, ki izpisuje
+													// trenutnega prejemnika in
+													// ga lahko uporabimo, da
+													// preidemo nazaj na javna
+													// sporoƒçila
 		prejemnik_panel.add(prejemnik);
 		prejemnik.addActionListener(new ActionListener() {
 			@Override
@@ -243,14 +254,15 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 
 		addWindowListener(new WindowAdapter() {
 			public void windowOpened(WindowEvent e) {
-				message_input.requestFocus(); // Polje za vnos sporoËila ima fokus, ko se okno odpre
+				message_input.requestFocus(); // Polje za vnos sporoƒçila ima
+												// fokus, ko se okno odpre
 			}
 		});
-		
+
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				try {
-					if (!ime.equals("")) { // »e okno zapremo, nas odjavimo
+					if (!ime.equals("")) { // ƒåe okno zapremo, nas odjavimo
 						Klient.odjavi(link_uporabniki, ime);
 						ime = "";
 					}
@@ -258,14 +270,17 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				ChitChat.glavna_fukncija.deactivate(); // Ustavimo program, ki osveûuje sporoËila in seznam uporabnikov
+				ChitChat.glavna_fukncija.deactivate(); // Ustavimo program, ki
+														// osve≈æuje sporoƒçila in
+														// seznam uporabnikov
 			}
 		});
 		addMessage("Help",
-				"Pozdravljeni! Prosim vpiöite zaûeljeno uporabniöko ime in se prijavite. »e ûelite poslati zasebno sporoËilo uporabniku, kliknite nanj"
-						+ " v seznamu na desni. »e ûelite, da se za prejemnika zopet doloËi vse, kliknite na gumb pod seznamom uporabnikov. SporoËilo vpiöite v spodnje polje in pritisnite enter."
-						+ " Veliko zabave! (NAMIG: Poskusite besedilo konËati z /r, /g, /y ali /b.)",
-				new Date(), true, ""); // Objavi zaËetni pozdrav in kratka navodila.
+				"Pozdravljeni! Prosim vpi≈°ite za≈æeljeno uporabni≈°ko ime in se prijavite. ƒåe ≈æelite poslati zasebno sporoƒçilo uporabniku, kliknite nanj"
+						+ " v seznamu na desni. ƒåe ≈æelite, da se za prejemnika zopet doloƒçi vse, kliknite na gumb pod seznamom uporabnikov. Sporoƒçilo vpi≈°ite v spodnje polje in pritisnite enter."
+						+ " Veliko zabave! (NAMIG: Poskusite besedilo konƒçati z /r, /g, /y ali /b.)",
+				new Date(), true, ""); // Objavi zaƒçetni pozdrav in kratka
+										// navodila.
 	}
 
 	/**
@@ -273,59 +288,69 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	 *            - the person sending the message
 	 * @param message
 	 *            - the message content
-	 * @throws BadLocationException 
+	 * @throws BadLocationException
 	 */
-	public void addMessage(String person, String message, Date poslano_ob, Boolean javno, String prejemnik) throws BadLocationException {
+	public void addMessage(String person, String message, Date poslano_ob, Boolean javno, String prejemnik)
+			throws BadLocationException {
 		Calendar koledar = Calendar.getInstance();
 		koledar.setTime(poslano_ob);
 		int ure = koledar.get(Calendar.HOUR_OF_DAY);
 		int minute = koledar.get(Calendar.MINUTE);
-		String cas = String.format("%d:%02d", ure, minute); // Uporabimo koledar, da bomo lahko izpisali Ëas, ob katerem je bilo sporoËilo poslano
+		String cas = String.format("%d:%02d", ure, minute); // Uporabimo koledar, da bomo lahko izpisali
+															// ƒças, ob katerem je bilo sporoƒçilo poslano
 		StyleContext context = new StyleContext();
 		Style obicajen_stil = context.getStyle(StyleContext.DEFAULT_STYLE);
-	    StyleConstants.setAlignment(obicajen_stil, StyleConstants.ALIGN_RIGHT);
-	    StyleConstants.setFontSize(obicajen_stil, 12);
-	    StyleConstants.setSpaceAbove(obicajen_stil, 4);
-	    StyleConstants.setSpaceBelow(obicajen_stil, 4); // DoloËimo stil besedila, v katerem bodo izpisana sporoËila.
+		StyleConstants.setAlignment(obicajen_stil, StyleConstants.ALIGN_RIGHT);
+		StyleConstants.setFontSize(obicajen_stil, 12);
+		StyleConstants.setSpaceAbove(obicajen_stil, 4);
+		StyleConstants.setSpaceBelow(obicajen_stil, 4); // Doloƒçimo stil besedila, v katerem bodo izpisana
+														// sporoƒçila.
 		StyledDocument doc;
-	    if (javno) {
-	    	doc = glavno_okno; // »e je sporoËilo javno, ga bomo izpisali v glavno okno
+		if (javno) {
+			doc = glavno_okno; // ƒåe je sporoƒçilo javno, ga bomo izpisali v
+								// glavno okno
 		} else {
-			doc = trenutno_okno; // »e sporoËilo ni javno, ga bomo izpisali v zasebno okno
-			if (!person.equals(ime)){
-			    StyleConstants.setForeground(obicajen_stil, Color.red);
-				StyledDocument alert = glavno_okno; // »e sporoËila nismo poslali sami, se nam v glavnem oknu izpiöe obvestilo, da smo prejeli zasebno sporoËilo
-				alert.insertString(alert.getLength(), "Dobili ste sporoËilo od " + person +"!\n", obicajen_stil);
-			    StyleConstants.setForeground(obicajen_stil, Color.black);
+			doc = trenutno_okno; // ƒåe sporoƒçilo ni javno, ga bomo izpisali v
+									// zasebno okno
+			if (!person.equals(ime)) {
+				StyleConstants.setForeground(obicajen_stil, Color.red);
+				StyledDocument alert = glavno_okno; // ƒåe sporoƒçila nismo poslali sami, se nam v glavnem oknu izpi≈°e
+													// obvestilo, da smo prejeli zasebno sporoƒçilo
+				alert.insertString(alert.getLength(), "Dobili ste sporoƒçilo od " + person + "!\n", obicajen_stil);
+				StyleConstants.setForeground(obicajen_stil, Color.black);
 				doc = okna.get(person);
 			}
-			if(doc == null){ // »e zasebno okno öe ne obstaja, ga naredimo.
+			if (doc == null) { // ƒåe zasebno okno ≈°e ne obstaja, ga naredimo.
 				StyledDocument zasebno_okno = new DefaultStyledDocument();
 				okna.put(person, zasebno_okno);
 				doc = zasebno_okno;
 			}
 		}
-	    String prvi_del = "[" + cas + "] "; // Prvi del sporoËila, ki ga bomo objavili (Ëas)
+		String prvi_del = "[" + cas + "] "; // Prvi del sporoƒçila, ki ga bomo
+											// objavili (ƒças)
 		doc.insertString(doc.getLength(), prvi_del, obicajen_stil);
-	    StyleConstants.setForeground(obicajen_stil, Color.blue); // Ime uporabnika bomo objavili v modri barvi
+		StyleConstants.setForeground(obicajen_stil, Color.blue); // Ime uporabnika bomo
+																	// objavili v modri barvi
 		doc.insertString(doc.getLength(), person, obicajen_stil);
-		String ukaz = message.substring(message.length()-2); // »e smo besedilo konËali z doloËenim ukazom, ga izvröimo
+		String ukaz = message.substring(message.length() - 2); // ƒåe smo besedilo konƒçali z
+																// doloƒçenim ukazom, ga izvr≈°imo
 		Color barva = Color.black;
-		if (ukaz.equals("/r")){
+		if (ukaz.equals("/r")) {
 			barva = Color.red;
-			message = message.substring(0, message.length()-2);
-		} else if (ukaz.equals("/b")){
+			message = message.substring(0, message.length() - 2);
+		} else if (ukaz.equals("/b")) {
 			barva = Color.blue;
-			message = message.substring(0, message.length()-2);
-		} else if (ukaz.equals("/g")){
+			message = message.substring(0, message.length() - 2);
+		} else if (ukaz.equals("/g")) {
 			barva = Color.green;
-			message = message.substring(0, message.length()-2);
-		} else if (ukaz.equals("/y")){
+			message = message.substring(0, message.length() - 2);
+		} else if (ukaz.equals("/y")) {
 			barva = Color.yellow;
-			message = message.substring(0, message.length()-2);
+			message = message.substring(0, message.length() - 2);
 		}
-	    StyleConstants.setForeground(obicajen_stil, barva);
-		String drugi_del = ": " + message + "\n"; // Drugi del sporoËila, ki ga bomo objavili (sporoËilo samo) v ûeleni barvi
+		StyleConstants.setForeground(obicajen_stil, barva);
+		String drugi_del = ": " + message + "\n"; // Drugi del sporoƒçila, ki ga bomo objavili (sporoƒçilo
+													// samo) v ≈æeleni barvi
 		doc.insertString(doc.getLength(), drugi_del, obicajen_stil);
 	}
 
@@ -340,19 +365,23 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	@Override
 	public void keyTyped(KeyEvent e) {
 		if (e.getSource() == this.message_input) {
-			if (e.getKeyChar() == '\n') { // Ko pritisnemo Enter, ûelimo poslati sporoËilo
-				if (!ime.equals("") && !this.message_input.getText().equals("")) { // Preverimo, da je uporabnik nekaj napisal in je prijavljen
+			if (e.getKeyChar() == '\n') { // Ko pritisnemo Enter, ≈æelimo poslati
+											// sporoƒçilo
+				if (!ime.equals("") && !this.message_input.getText().equals("")) { // Preverimo, da je uporabnik nekaj
+																					// napisal in je prijavljen
 					try {
 						String oseba_prejemnik = prejemnik.getText().substring("Prejemnik: ".length(),
-								prejemnik.getText().length()); // Izrazimo prejemnika
-						Boolean javno; // Izrazimo, Ëe je sporoËilo javno ali zasebno
+								prejemnik.getText().length()); // Izrazimo
+																// prejemnika
+						Boolean javno; // Izrazimo, ƒçe je sporoƒçilo javno ali
+										// zasebno
 						if (prejemnik.getText().equals("Prejemnik: Vsi")) {
 							javno = true;
 						} else {
 							javno = false;
 						}
 						Klient.poslji_sporocilo(link_sporocila, ime, this.message_input.getText(), javno,
-								oseba_prejemnik); // Poöljemo sporoËilo
+								oseba_prejemnik); // Po≈°ljemo sporoƒçilo
 						this.addMessage(ime, this.message_input.getText(), new Date(), javno, oseba_prejemnik);
 					} catch (IOException | URISyntaxException e1) {
 						// TODO Auto-generated catch block
@@ -361,7 +390,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					this.message_input.setText(""); // Izbriöemo tekst iz vnosnega polja
+					this.message_input.setText(""); // Izbri≈°emo tekst iz
+													// vnosnega polja
 				}
 			}
 		}

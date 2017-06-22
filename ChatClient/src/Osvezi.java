@@ -16,13 +16,13 @@ public class Osvezi extends TimerTask {
 	}
 
 	/**
-	 * Poûene glavno funkcijo vsak interval.
+	 * Po≈æene glavno funkcijo vsak interval.
 	 */
 	public void activate() {
 		timer = new Timer();
 		timer.scheduleAtFixedRate(this, 5000, 1000);
 	}
-	
+
 	/**
 	 * Prekine z dejavnostjo.
 	 */
@@ -32,13 +32,16 @@ public class Osvezi extends TimerTask {
 
 	@Override
 	public void run() {
-		if (!chat.ime.equals("")) { // »e smo prijavljeni preveri, Ëe nas Ëakajo nova sporoËila.
+		if (!chat.ime.equals("")) { // ƒåe smo prijavljeni preveri, ƒçe nas ƒçakajo
+									// nova sporoƒçila.
 			List<Sporocilo> prejeta_sporocila;
 			try {
 				prejeta_sporocila = Klient.prejmi_sporocilo(chat.link_sporocila, chat.ime);
 				for (Sporocilo sporocilo : prejeta_sporocila) {
 					chat.addMessage(sporocilo.getSender(), sporocilo.getText(), sporocilo.getSentAt(),
-							sporocilo.getGlobal(), sporocilo.getRecipient()); // Objavi nova sporoËila.
+							sporocilo.getGlobal(), sporocilo.getRecipient()); // Objavi
+																				// nova
+																				// sporoƒçila.
 				}
 			} catch (IOException | URISyntaxException e) {
 				// TODO Auto-generated catch block
@@ -48,13 +51,16 @@ public class Osvezi extends TimerTask {
 				e.printStackTrace();
 			}
 		}
-		ArrayList<Uporabnik> uporabniki; // Prejme seznam prijavljenih uporabnikov.
+		ArrayList<Uporabnik> uporabniki; // Prejme seznam prijavljenih
+											// uporabnikov.
 		try {
 			uporabniki = Klient.prijavljeni_uporabniki(chat.link_uporabniki);
 			ArrayList<Uporabnik> myArrayList = uporabniki;
 			Uporabnik[] items = new Uporabnik[myArrayList.size()];
 			myArrayList.toArray(items);
-			chat.seznam_uporabnikov.setListData(items); // Prikaûe prijavljenje uporabnike preko JList.
+			chat.seznam_uporabnikov.setListData(items); // Prika≈æe prijavljenje
+														// uporabnike preko
+														// JList.
 		} catch (IOException | URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

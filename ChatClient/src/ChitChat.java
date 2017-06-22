@@ -9,10 +9,33 @@ public class ChitChat {
 	public static void main(String[] args) throws IOException, URISyntaxException, BadLocationException {
 		ChatFrame chatFrame = new ChatFrame();
 		glavna_fukncija = new Osvezi(chatFrame);
-		glavna_fukncija.activate(); // Zaûene funkcijo za pridobivanje sporoËil in prijavljenih uporabnikov.
+		glavna_fukncija.activate(); // Za≈æene funkcijo za pridobivanje sporoƒçil
+									// in prijavljenih uporabnikov.
 		chatFrame.pack();
-		chatFrame.setSize(700,400); // DoloËi zaËetno velikost.
-		chatFrame.setVisible(true); // Prikaûe okno.
+
+		Runtime.getRuntime().addShutdownHook(new Thread() // ƒåe okno zapremo
+															// preko Quit, nas
+															// odjavimo
+		{
+			@Override
+			public void run() {
+				try {
+					if (!chatFrame.ime.equals("")) { // ƒåe okno zapremo, nas
+														// odjavimo
+						Klient.odjavi(chatFrame.link_uporabniki, chatFrame.ime);
+						chatFrame.ime = "";
+					}
+				} catch (IOException | URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				glavna_fukncija.deactivate(); // Ustavimo program, ki osve≈æuje
+												// sporoƒçila in seznam
+												// uporabnikov
+			}
+		});
+
+		chatFrame.setVisible(true); // Prika≈æe okno.
 	}
 
 }

@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 public class Klient {
 
 	/**
-	 * Vrne seznam sporoËil za uporabnika.
+	 * Vrne seznam sporoƒçil za uporabnika.
 	 */
 	public static List<Sporocilo> prejmi_sporocilo(String link, String username)
 			throws ClientProtocolException, IOException, URISyntaxException {
@@ -33,7 +33,7 @@ public class Klient {
 	}
 
 	/**
-	 * Poölje sporoËilo prejemniku.
+	 * Po≈°lje sporoƒçilo prejemniku.
 	 */
 	public static String poslji_sporocilo(String link, String username, String sporocilo, Boolean javno,
 			String prejemnik) throws ClientProtocolException, IOException, URISyntaxException {
