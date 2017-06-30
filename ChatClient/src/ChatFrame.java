@@ -217,11 +217,19 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 						okna.put(prejemnik_ime, zasebno_okno);
 						trenutno_okno = zasebno_okno;
 						try {
-							addMessage("Help",
-									"Odprli se zasebno okno za pogovor z uporabnikom " + prejemnik_ime + ". "
-									+ "Če želite odpreti nazaj javna sporočila, kliknite na gumb \"Javna sporočila\" pod "
-									+ "seznamom prijavljenih uporabnikov.",
-									new Date(), false, "");
+							if (!prejemnik_ime.equals(ime)){
+								addMessage("Help",
+										"Odprli se zasebno okno za pogovor z uporabnikom " + prejemnik_ime + ". "
+										+ "Če želite odpreti nazaj javna sporočila, kliknite na gumb \"Javna sporočila\" pod "
+										+ "seznamom prijavljenih uporabnikov.",
+										new Date(), false, "");
+								} else {
+								addMessage("Help",
+											"Odprli se zasebno okno za pogovor s sabo. To okno bo delovalo kot odmev. "
+											+ "Če želite odpreti nazaj javna sporočila, kliknite na gumb \"Javna sporočila\" pod "
+											+ "seznamom prijavljenih uporabnikov.",
+											new Date(), false, "");
+								}
 						} catch (BadLocationException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -361,25 +369,34 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 				StyledDocument zasebno_okno = new DefaultStyledDocument();
 				okna.put(person, zasebno_okno);
 				doc = zasebno_okno;
+				if (!person.equals(ime)){
 				addMessage("Help",
 						"Odprli se zasebno okno za pogovor z uporabnikom " + person + ". "
 						+ "Če želite odpreti nazaj javna sporočila, kliknite na gumb \"Javna sporočila\" pod "
 						+ "seznamom prijavljenih uporabnikov.",
 						new Date(), false, person);
+				} else {
+				addMessage("Help",
+							"Odprli se zasebno okno za pogovor s sabo. To okno bo delovalo kot odmev. "
+							+ "Če želite odpreti nazaj javna sporočila, kliknite na gumb \"Javna sporočila\" pod "
+							+ "seznamom prijavljenih uporabnikov.",
+							new Date(), false, person);
+				}
 			}
 		}
 		String prvi_del = "[" + cas + "] "; // Prvi del sporočila, ki ga bomo
 											// objavili (čas)
 		doc.insertString(doc.getLength(), prvi_del, obicajen_stil);
-		if (person.equals(ime) || person.equals("Help")){
+		if (person.equals(ime)){
 			StyleConstants.setForeground(obicajen_stil, Color.red); // Ime uporabnika in ime Help bomo izpisali v rdeči barvi
 		} else {
 			StyleConstants.setForeground(obicajen_stil, Color.blue); // Ime obicajnega posiljatelja bomo objavili v modri barvi
 		}
 		doc.insertString(doc.getLength(), person, obicajen_stil);
+		Color barva = Color.black;
+		if (message.length() >= 2){
 		String ukaz = message.substring(message.length() - 2); // Če smo besedilo končali z
 																// določenim ukazom, ga izvršimo
-		Color barva = Color.black;
 		if (ukaz.equals("/r")) {
 			barva = Color.red;
 			message = message.substring(0, message.length() - 2);
@@ -392,6 +409,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		} else if (ukaz.equals("/y")) {
 			barva = Color.yellow;
 			message = message.substring(0, message.length() - 2);
+		}
 		}
 		StyleConstants.setForeground(obicajen_stil, barva);
 		String drugi_del = ": " + message + "\n"; // Drugi del sporočila, ki ga bomo objavili (sporočilo
